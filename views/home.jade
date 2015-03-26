@@ -1,0 +1,13 @@
+extends index2
+block content
+	#container
+		form(action="/chat", method="post")
+			label(id="private")
+				input(type="radio", name="type", value="private",checked=checked)
+				| Private
+			br
+			label(id="group")
+				input(type="radio", name="type", value="group")
+				| Group
+			br
+			input(type="submit", value="Go")
