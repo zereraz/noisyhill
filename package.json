@@ -23,6 +23,7 @@
     "express": "^4.10.1",
     "express-session": "^1.9.1",
     "jade": "^1.7.0",
+    "node-uuid": "^1.4.3",
     "socket.io": "^1.2.0"
   }
 }
