@@ -18,7 +18,7 @@ var port = process.env.PORT || 3000;
 //routes
 var index = require('./routes/index');
 var room = require('./routes/room');
-var artbay = require('./routes/artbay');
+//var artbay = require('./routes/artbay');
 var activeConnections = 0;
 var myRoom = 0;
 var roomLord = {};
@@ -63,10 +63,10 @@ app.get('/',index.home);
 
 
 //room , drawing area
-app.get('/room',room.gRoom);
-app.post('/room',room.pRoom);
-app.get('/usercheck',room.userCheck);
-app.get('/artbay',artbay.home)
+// app.get('/room',room.gRoom);
+// app.post('/room',room.pRoom);
+// app.get('/usercheck',room.userCheck);
+
 app.post('/chat', function(req,res){
     var type = req.body.type;
     res.redirect('/'+type);
