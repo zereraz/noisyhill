@@ -66,16 +66,25 @@ app.get('/',index.home);
 // app.get('/room',room.gRoom);
 // app.post('/room',room.pRoom);
 // app.get('/usercheck',room.userCheck);
-
+var city = '';
 app.post('/chat', function(req,res){
     var type = req.body.type;
+    city = req.body.city;
     res.redirect('/'+type);
 });
-app.get('/private',function(req,res){
-    res.render('private');
+app.get('/private',function(req,res){    
+    if(city.length!==0){
+        res.render('private',city);
+    }else{
+        res.send("Your city was not selected, <a href='/'>Back</a>")
+    }
 });
 app.get('/group',function(req,res){
-    res.render('group');
+    if(city.length!==0){
+        res.render('group',city);
+    }else{
+        res.send("Your city was not selected, <a href='/'>Back</a>")
+    }
 });
 
 

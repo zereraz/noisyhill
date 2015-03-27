@@ -14,7 +14,6 @@ $(document).ready(function(){
 	function init(){
 		socket = io();
 		addEventHandlers();
-
 	}
 	// 1 is me | 2 is other
 	function addToMessageContainer(data, by){
