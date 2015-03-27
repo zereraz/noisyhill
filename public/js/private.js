@@ -6,9 +6,11 @@ $(document).ready(function(){
 	//Event handlers
 	function sendMessage(){
 		var message = messageInp.val();
-		addToMessageContainer(message, 1);
-		socket.emit("sendMessage",{"message":message});
-		messageInp.val('');
+		if(message.length!==0){
+			addToMessageContainer(message, 1);
+			socket.emit("sendMessage",{"message":message});
+			messageInp.val('');
+		}		
 	}
 
 	function init(){
