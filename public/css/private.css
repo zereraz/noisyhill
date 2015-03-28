@@ -1,5 +1,6 @@
 body{
 	background-color: #eee;
+	font-family: helvetica;
 }
 #message{
 	width: 80%;
@@ -12,12 +13,13 @@ body{
 }
 input{
 	outline: none;
+	font-family: helvetica;
 }
 .me{
-	border-bottom: 1px dashed black;
+	
 }
 .other{
-	border-bottom: 1px dotted black;
+	
 }
 .who{
 	float: right;

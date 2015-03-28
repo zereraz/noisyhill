@@ -2,13 +2,15 @@ $(document).ready(function(){
 	var socket = null;	
 	var messageInp = $("#message");
 	var messageContainer = $("#messageContainer");
-	var city;
+	var roomId = 0;
+	
+	var location = {};
 	//Event handlers
 	function sendMessage(){
 		var message = messageInp.val();
 		if(message.length!==0){
 			addToMessageContainer(message, 1);
-			socket.emit("sendMessage",{"message":message});
+			socket.emit("sendMessage",{"message":message,"rId":roomId});
 			messageInp.val('');
 		}		
 	}
@@ -18,11 +20,15 @@ $(document).ready(function(){
 		addEventHandlers();
 	}
 	// 1 is me | 2 is other
-	function addToMessageContainer(data, by){
+	function addToMessageContainer(data, by){		
 		if(by === 1){
-			messageContainer.append("</br><div class='me'>"+data+"</div>")
+			var data = document.createTextNode("You : "+data);
+			messageContainer.append(data);
+			messageContainer.append("</br>");
 		}else{
-			messageContainer.append("</br><div class='other'>"+data+"<div class='who'>Stranger</div></div>")
+			var data = document.createTextNode("Stranger : "+data);
+			messageContainer.append(data);
+			messageContainer.append("</br>");
 		}
 	}
 	function addEventHandlers(){		
@@ -36,10 +42,11 @@ $(document).ready(function(){
 		});
 	}
 
+	// Google Maps
 	function initialize(){
 		var mapCanvas = document.getElementById('map-canvas');
 		var mapOptions = {
-      		center: new google.maps.LatLng(44.5403, -78.5463),
+      		center: new google.maps.LatLng(location.la, location.lo),
       		zoom: 8,
       		mapTypeId: google.maps.MapTypeId.ROADMAP
 		}
@@ -52,8 +59,22 @@ $(document).ready(function(){
 	socket.on("gotMessage", function(data){
 		addToMessageContainer(data.message,2);
 	});
-	socket.on("myCity", function(data){
-		city = data;
+	socket.on("myData", function(data){
+		$('#message').attr('disabled',false);
+		location.city = data.c;
+		location.la = data.la;
+		location.lo = data.lo;
+		roomId = data.rm;
+		$('#info').text('city : '+location.city);
 		initialize();		
+	});
+	socket.on("finding", function(){
+		$('#status').text("Finding...");
+	});
+	socket.on("connecting", function(){
+		$('#status').text("Connecting...");
+	});
+	socket.on("joint", function(){
+		$('#status').text("Connected!");
 	});
 });
