@@ -70,6 +70,7 @@ var city = '';
 app.post('/chat', function(req,res){
     var type = req.body.type;
     city = req.body.city;
+    req.session.body = city;
     res.redirect('/'+type);
 });
 app.get('/private',function(req,res){    
@@ -96,11 +97,13 @@ app.get('/group',function(req,res){
 
 io.on('connection', function(socket){
     console.log(socket.id + " Joined!");
+    console.log("From " + city);
     var roomUuid = uuid.v1();
     // create a room for every 2 people that are connected
     // put people who join into a pool
     // if pool is not empty take a person from the pool and send him to latest joint person
     console.log("Room is "+roomUuid);
+    socket.emit("myCity", city);
     socket.on("sendMessage", function(data){
         console.log(socket.id + " sent " + data.message )
         socket.broadcast.emit("gotMessage", data);

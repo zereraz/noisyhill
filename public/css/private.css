@@ -22,3 +22,10 @@ input{
 .who{
 	float: right;
 }
+#map-canvas{
+	width:200px;
+	height:200px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}

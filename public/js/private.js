@@ -2,7 +2,7 @@ $(document).ready(function(){
 	var socket = null;	
 	var messageInp = $("#message");
 	var messageContainer = $("#messageContainer");
-
+	var city;
 	//Event handlers
 	function sendMessage(){
 		var message = messageInp.val();
@@ -36,10 +36,24 @@ $(document).ready(function(){
 		});
 	}
 
+	function initialize(){
+		var mapCanvas = document.getElementById('map-canvas');
+		var mapOptions = {
+      		center: new google.maps.LatLng(44.5403, -78.5463),
+      		zoom: 8,
+      		mapTypeId: google.maps.MapTypeId.ROADMAP
+		}
+		var map = new google.maps.Map(mapCanvas, mapOptions);
+	}
+
 	init();	
 
 	// socket event handlers
 	socket.on("gotMessage", function(data){
 		addToMessageContainer(data.message,2);
+	});
+	socket.on("myCity", function(data){
+		city = data;
+		initialize();		
 	});
 });
