@@ -1,9 +1,11 @@
 body{
 	background-color: #eee;
 	font-family: helvetica;
+	background: url("/img/confectionary.png");
 }
 #message{
 	width: 80%;
+	height:15px;
 }
 #inputArea{
 	margin-left: auto;
@@ -13,7 +15,14 @@ body{
 }
 input{
 	outline: none;
-	font-family: helvetica;
+	font-family: helvetica;	
+	border:none;
+	 /* css 3 */
+ 	border-radius:5px;
+ 	/* mozilla */
+ 	-moz-border-radius:5px;
+ 	/* webkit */
+ 	-webkit-border-radius:5px;
 }
 .me{
 	
