@@ -4,4 +4,4 @@ A location based chat
 
 ### current location (testing)
 
-[testing](noisyhill.herokuapp.com)
+[testing](http://noisyhill.herokuapp.com)
