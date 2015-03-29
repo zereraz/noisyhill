@@ -60,6 +60,7 @@ $(document).ready(function(){
 		addToMessageContainer(data.message,2);
 	});
 	socket.on("myData", function(data){
+		console.log(data);
 		$('#message').attr('disabled',false);
 		location.city = data.c;
 		location.la = data.la;
@@ -69,12 +70,15 @@ $(document).ready(function(){
 		initialize();		
 	});
 	socket.on("finding", function(){
+		console.log("finding");
 		$('#status').text("Finding...");
 	});
 	socket.on("connecting", function(){
+		console.log("connecting");
 		$('#status').text("Connecting...");
 	});
-	socket.on("joint", function(){
+	socket.on("joint", function(){		
+		console.log("joint");
 		$('#status').text("Connected!");
 	});
 });

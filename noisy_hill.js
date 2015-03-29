@@ -137,6 +137,9 @@ io.on('connection', function(socket){
     function sendTo(room, message){
         socket.broadcast.to(room).emit(message);
     }
+    function sendToBoth(room, message){
+        io.sockets.in(room).emit(message);
+    }
     console.log(socket.id + " Joined!");
     console.log("From " + city);
     // create a room for every 2 people that are connected
@@ -148,6 +151,7 @@ io.on('connection', function(socket){
     tempRoom = findRoom();
     console.log("tempRoom "+tempRoom);
     if(tempRoom === 0){
+        // when odd no. of users, create a room as no room is available
         console.log("creating a new room")
         roomUuid = uuid.v1();
         roomObj = new Room(roomUuid, socket.id, true);
@@ -156,10 +160,12 @@ io.on('connection', function(socket){
         socket.emit("finding");
         socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":roomUuid});
     }else{        
+        socket.join(tempRoom.id);
+        // when found a room
         tempRoom.available = false;
-        sendTo(tempRoom.id, "connecting");
+        sendToBoth(tempRoom.id, "connecting");
         socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempRoom.id});
-        socket.emit("joint");
+        sendToBoth(tempRoom.id, "joint");
     }
 
     //userPool[roomUuid] = [];
