@@ -20,9 +20,9 @@ var index = require('./routes/index');
 var room = require('./routes/room');
 
 
-var userPool = [];
+//var userPool = [];
 var rooms = [];
-var connected = [];
+var connected = {};
 /*==========================
  *
  * 	MIDDLEWARE
@@ -105,6 +105,7 @@ function Room(id, masterId, available){
     this.id = id;
     this.masterId = masterId;
     this.available = available;
+    this.otherId = null;
 }
 
 //helper functions
@@ -121,6 +122,19 @@ function findRoom(){
     }
 }
 
+function findIndexRoom(id){
+    console.log("finding index for "+id);
+    if(rooms.length === 0){
+        return -1;
+    }else{
+        for(var i = 0; i < rooms.length; i++){
+            if(rooms[i].masterId === id || rooms[i].otherId === id){
+                return i;
+            }
+        }
+    }
+}
+
 /*==========================
  *
  *	socket.io	
@@ -133,6 +147,7 @@ var roomUuid = 0;
 var tempPerson = null;
 var tempRoom = null;
 var roomObj;
+
 io.on('connection', function(socket){
     function sendTo(room, message){
         socket.broadcast.to(room).emit(message);
@@ -140,16 +155,11 @@ io.on('connection', function(socket){
     function sendToBoth(room, message){
         io.sockets.in(room).emit(message);
     }
-    console.log(socket.id + " Joined!");
-    console.log("From " + city);
     // create a room for every 2 people that are connected
     // put people who join into a pool
     // if pool is not empty take a person from the pool and send him to latest joint person
-    console.log("Room is "+roomUuid);
-    temp = new People(socket.id,city,longitude,latitude);
-    userPool.push(temp);
+    //temp = new People(socket.id,city,longitude,latitude);    
     tempRoom = findRoom();
-    console.log("tempRoom "+tempRoom);
     if(tempRoom === 0){
         // when odd no. of users, create a room as no room is available
         console.log("creating a new room")
@@ -163,19 +173,31 @@ io.on('connection', function(socket){
         socket.join(tempRoom.id);
         // when found a room
         tempRoom.available = false;
+        tempRoom.otherId = socket.id;
         sendToBoth(tempRoom.id, "connecting");
         socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempRoom.id});
         sendToBoth(tempRoom.id, "joint");
+        connected[tempRoom.id] = [socket.id, tempRoom.masterId];
+        console.log(rooms);
     }
 
-    //userPool[roomUuid] = [];
-    //userPool[roomUuid].push({"id":socket.id,"c":city,"lo":longitude,"la":latitude});    
     socket.on("sendMessage", function(data){
-        console.log(socket.id + " sent " + data.message);
         socket.broadcast.to(data.rId).emit("gotMessage", data);
     });
-    console.log(rooms);
-    console.log(userPool);
+
+    socket.on("disconnect", function(data){
+        console.log("in disconnected");        
+        var index = findIndexRoom(socket.id);
+        console.log(index);
+        if(index!==-1){
+            socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
+            rooms.splice(index,1);
+        }else{
+            console.log("Room already gone!");
+            //socket.emit("error","Cannot remove room as index is -1");
+        }
+        console.log(rooms);
+    });
 });
 
 /*==========================

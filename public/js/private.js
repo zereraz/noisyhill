@@ -3,7 +3,7 @@ $(document).ready(function(){
 	var messageInp = $("#message");
 	var messageContainer = $("#messageContainer");
 	var roomId = 0;
-	
+	var disconnected = true;
 	var location = {};
 	//Event handlers
 	function sendMessage(){
@@ -42,6 +42,24 @@ $(document).ready(function(){
 				sendMessage();
 			}
 		});
+		// before close of tab ask if sure
+		window.addEventListener("beforeunload", function (e) {
+		var confirmationMessage = "Are you sure?";
+		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+		  return confirmationMessage;                      //Webkit, Safari, Chrome
+		});
+		// on close of tab
+		$( window ).unload(function() {
+			if(!disconnected)
+  				socket.emit("disconnect");
+		});
+		// on click of disconnect
+		$( '#disconnect' ).click(function(){
+			if(!disconnected){
+				socket.emit("disconnect");
+				console.log("Emitted disconnect");
+			}				
+		});
 	}
 
 	// Google Maps
@@ -79,8 +97,17 @@ $(document).ready(function(){
 		console.log("connecting");
 		$('#status').text("Connecting...");
 	});
-	socket.on("joint", function(){		
+	socket.on("joint", function(){
+		disconnected = false;
 		console.log("joint");
 		$('#status').text("Connected!");
+	});
+
+	socket.on("error", function(data){
+		alert(data);
+	});
+	socket.on("disconnected", function(data){
+		disconnected = true;
+		alert(data);
 	});
 });
