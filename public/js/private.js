@@ -8,11 +8,12 @@ $(document).ready(function(){
 	//Event handlers
 	function sendMessage(){
 		var message = messageInp.val();
+		//if not empty
 		if(message.length!==0){
 			addToMessageContainer(message, 1);
 			socket.emit("sendMessage",{"message":message,"rId":roomId});
 			messageInp.val('');
-		}		
+		}
 	}
 
 	function init(){
@@ -30,6 +31,7 @@ $(document).ready(function(){
 			messageContainer.append(data);
 			messageContainer.append("</br>");
 		}
+		window.scrollTo(0, document.body.scrollHeight);
 	}
 	function addEventHandlers(){		
 		$('#send').on('click', sendMessage);

@@ -9,11 +9,23 @@ body{
 	outline: none;
 	padding: 6px 10px;
 }
+button{
+	outline: none;
+}
 #inputArea{
-	margin-left: auto;
-	margin-right: auto;
-	width: 50%;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -200px;
+	margin-left: -250px;
+	width: 50%;	
 	height: 50px;
+}
+#info{
+	width: inherit;
+	height: 50px;
+	display: block;	
+	margin: -20px auto;
 }
 input{
 	outline: none;
@@ -27,6 +39,7 @@ input{
  	-webkit-border-radius:5px;
 }
 .button-primary{
+	margin-right:5px; 
 	color:#555;
 	text-align: center;
 	letter-spacing: .1rem;
@@ -54,6 +67,7 @@ input{
 	float: right;
 }
 #map-canvas{
+	border: 2px solid #bbb;
 	width:200px;
 	height:200px;
 	position: absolute;

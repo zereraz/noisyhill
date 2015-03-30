@@ -2,14 +2,15 @@ extends index
 block content	
 	// to disconnect, chat with others, home
 	#options
-		button(id="home", class="button-primary") Home
+		a(href="/")
+			button(id="home", class="button-primary") Home
 		button(id="newChat", class="button-primary") New Chat
 		button(id="disconnect", class="button-primary") Disconnect
 
 	#map-canvas
-	#info
+	button(class="button-primary",id="info")
 	//maybe change it later to form and do preventDefault
-	#status
+	button(class="button-primary",id="status")
 	#inputArea
 		input(type="text", id="message", autocomplete='off', placeholder="   message", autofocus)
 		button(id="send",class="button-primary") send
