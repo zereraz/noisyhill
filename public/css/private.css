@@ -74,3 +74,6 @@ input{
 	top: 0px;
 	right: 0px;
 }
+#messageContainer{
+	margin-top: 100px;
+}

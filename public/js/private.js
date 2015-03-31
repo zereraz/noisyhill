@@ -29,7 +29,7 @@ $(document).ready(function(){
 		}else{
 			var data = document.createTextNode("Stranger : "+data);
 			messageContainer.append(data);
-			messageContainer.append("</br>");
+			messageContainer.append("</br></br>");
 		}
 		window.scrollTo(0, document.body.scrollHeight);
 	}
@@ -44,12 +44,12 @@ $(document).ready(function(){
 		});
 		// before close of tab ask if sure
 		window.addEventListener("beforeunload", function (e) {
-		if(!disconnected){
-			var confirmationMessage = "Are you sure?";
-			(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-			 return confirmationMessage;                      //Webkit, Safari, Chrome
-			
-		}
+			if(!disconnected){
+				var confirmationMessage = "Are you sure?";
+				(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+				 return confirmationMessage;                      //Webkit, Safari, Chrome
+				
+			}
 		});
 		// on close of tab
 		$( window ).unload(function() {
@@ -71,7 +71,7 @@ $(document).ready(function(){
 		var mapCanvas = document.getElementById('map-canvas');
 		var mapOptions = {
       		center: new google.maps.LatLng(location.la, location.lo),
-      		zoom: 8,
+      		zoom: 12,
       		mapTypeId: google.maps.MapTypeId.ROADMAP
 		}
 		var map = new google.maps.Map(mapCanvas, mapOptions);

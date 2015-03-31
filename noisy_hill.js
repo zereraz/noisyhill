@@ -124,6 +124,7 @@ function findRoom(){
 
 function findIndexRoom(id){
     console.log("finding index for "+id);
+    console.log("\n"+rooms.length);
     if(rooms.length === 0){
         return -1;
     }else{
@@ -132,6 +133,7 @@ function findIndexRoom(id){
                 return i;
             }
         }
+        return -1;
     }
 }
 
