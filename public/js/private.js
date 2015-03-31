@@ -17,7 +17,7 @@ $(document).ready(function(){
 	}
 
 	function init(){
-		socket = io();
+		socket = io('/private');
 		addEventHandlers();
 	}
 	// 1 is me | 2 is other

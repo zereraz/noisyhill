@@ -23,6 +23,7 @@ var room = require('./routes/room');
 //var userPool = [];
 var rooms = [];
 var connected = {};
+var groups = [];
 /*==========================
  *
  * 	MIDDLEWARE
@@ -108,6 +109,12 @@ function Room(id, masterId, available){
     this.otherId = null;
 }
 
+function Group(id, name){
+    this.id = id;
+    this.name = name;
+    this.currMembers = 1;
+}
+
 //helper functions
 function findRoom(){
     if(rooms.length === 0){
@@ -150,13 +157,19 @@ var tempPerson = null;
 var tempRoom = null;
 var roomObj;
 
-io.on('connection', function(socket){
+
+var pri = io.of('/private');
+pri.on('connection', function(socket){
+
+    // helper functions
     function sendTo(room, message){
         socket.broadcast.to(room).emit(message);
     }
     function sendToBoth(room, message){
-        io.sockets.in(room).emit(message);
+        socket.emit(message);
+        socket.broadcast.to(room).emit(message);
     }
+    
     // create a room for every 2 people that are connected
     // put people who join into a pool
     // if pool is not empty take a person from the pool and send him to latest joint person
@@ -203,7 +216,6 @@ io.on('connection', function(socket){
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
         }
-        console.log(rooms);
     });
     
     console.log("Connected");
