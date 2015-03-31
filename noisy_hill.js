@@ -187,7 +187,12 @@ io.on('connection', function(socket){
 
     socket.on("disconnect", function(data){
         console.log("in disconnected");        
+        // I can also do rooms = rooms.filter(function(el){ return el.id!==socket.id});, it will return rooms
+        // whose id is not the s
         var index = findIndexRoom(socket.id);
+        // here we are removing room
+        // we could replace the master/other id with the existing id
+        // and make it available
         console.log(index);
         if(index!==-1){
             socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
@@ -198,6 +203,8 @@ io.on('connection', function(socket){
         }
         console.log(rooms);
     });
+    
+    console.log("Connected");
 });
 
 /*==========================

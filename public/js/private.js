@@ -3,7 +3,7 @@ $(document).ready(function(){
 	var messageInp = $("#message");
 	var messageContainer = $("#messageContainer");
 	var roomId = 0;
-	var disconnected = true;
+	var disconnected = false;
 	var location = {};
 	//Event handlers
 	function sendMessage(){
@@ -11,7 +11,7 @@ $(document).ready(function(){
 		//if not empty
 		if(message.length!==0){
 			addToMessageContainer(message, 1);
-			socket.emit("sendMessage",{"message":message,"rId":roomId});
+			socket.emit("sendMessage",{"message":message,"rId":roomId});			
 			messageInp.val('');
 		}
 	}
@@ -44,9 +44,12 @@ $(document).ready(function(){
 		});
 		// before close of tab ask if sure
 		window.addEventListener("beforeunload", function (e) {
-		var confirmationMessage = "Are you sure?";
-		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-		  return confirmationMessage;                      //Webkit, Safari, Chrome
+		if(!disconnected){
+			var confirmationMessage = "Are you sure?";
+			(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+			 return confirmationMessage;                      //Webkit, Safari, Chrome
+			
+		}
 		});
 		// on close of tab
 		$( window ).unload(function() {
@@ -55,10 +58,11 @@ $(document).ready(function(){
 		});
 		// on click of disconnect
 		$( '#disconnect' ).click(function(){
-			if(!disconnected){
-				socket.emit("disconnect");
-				console.log("Emitted disconnect");
-			}				
+			if(!disconnected)			
+				socket.disconnect();
+			disconnected = true;
+			$('#status').text("Disconnected");
+
 		});
 	}
 
@@ -100,7 +104,7 @@ $(document).ready(function(){
 	socket.on("joint", function(){
 		disconnected = false;
 		console.log("joint");
-		$('#status').text("Connected!");
+		$('#status').text("Connected");
 	});
 
 	socket.on("error", function(data){
@@ -108,6 +112,6 @@ $(document).ready(function(){
 	});
 	socket.on("disconnected", function(data){
 		disconnected = true;
-		alert(data);
+		$('#status').text("Disconnected");	
 	});
 });
