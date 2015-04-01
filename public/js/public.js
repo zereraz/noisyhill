@@ -17,7 +17,7 @@ $(document).ready(function(){
 	}
 
 	function init(){
-		socket = io('/public');
+		socket = io('/public');		
 		addEventHandlers();
 	}
 	// 1 is me | 2 is other
@@ -66,17 +66,7 @@ $(document).ready(function(){
 		});
 	}
 
-	// Google Maps
-	function initialize(){
-		var mapCanvas = document.getElementById('map-canvas');
-		var mapOptions = {
-      		center: new google.maps.LatLng(location.la, location.lo),
-      		zoom: 12,
-      		mapTypeId: google.maps.MapTypeId.ROADMAP
-		}
-		var map = new google.maps.Map(mapCanvas, mapOptions);
-	}
-
+	
 	init();	
 
 	// socket event handlers
@@ -90,8 +80,7 @@ $(document).ready(function(){
 		location.la = data.la;
 		location.lo = data.lo;
 		roomId = data.rm;
-		$('#info').text('city : '+location.city);
-		initialize();		
+		$('#info').text('city : '+location.city);		
 	});
 	socket.on("finding", function(){
 		console.log("finding");

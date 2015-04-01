@@ -100,7 +100,12 @@ app.post('/createGroup', function(req,res){
 
 app.get('/group/:name', function(req,res){
     name = req.param('name');
-    res.render("private",name);
+    res.render("public",name);
+});
+
+app.get('/getGroup', function(req,res){
+    console.log(groups);
+    res.json(groups);
 });
 
 //Constructor Functions
@@ -242,6 +247,7 @@ pri.on('connection', function(socket){
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
         }
+        console.log(groups);
     });
     
     console.log("Connected");
@@ -263,25 +269,19 @@ pub.on('connection', function(socket){
         socket.emit(message);
         socket.broadcast.to(room).emit(message);
     }
-    
-    // create a room for every 2 people that are connected
-    // put people who join into a pool
-    // if pool is not empty take a person from the pool and send him to latest joint person
-    //temp = new People(socket.id,city,longitude,latitude);    
-    tempGroup = findGroup("test");
-    if(tempGroup === 0){
-        // when odd no. of users, create a room as no room is available
-        console.log("creating a new room")
+    // here if name is empty
+    tempGroup = findGroup(name);
+    if(tempGroup === 0){        
+        console.log("creating a new group")
         groupUuid = uuid.v1();
-        groupObj = new Group(groupUuid, "test");
+        groupObj = new Group(groupUuid, name);
         groups.push(groupObj);
         socket.join(groupObj.id);
         socket.emit("finding");
         socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":groupUuid});
     }else{
         socket.join(tempGroup.id);
-        // when found a room
-        tempGroup.available = false;        
+        // when found a room        
         sendToBoth(tempGroup.id, "connecting");
         socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
         sendToBoth(tempGroup.id, "joint");

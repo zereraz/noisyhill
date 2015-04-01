@@ -1,4 +1,4 @@
-extends index_home
+extends index_group
 block content
 	h1 Public Groups
 	//Add captcha to create group
@@ -8,5 +8,6 @@ block content
 				input(id="groupName", name="group", autocomplete='off', placeholder='group name', autofocus)
 				input(id="send", type="submit", class="button-primary",value="Create & Join")
 	#publicGroup
-		button(id="getGroup", class="button-primary") Get Public Groups
+		a(href="/getGroup")
+			button(id="getGroup", class="button-primary") Get Public Groups
 		ul(id="groupList")
