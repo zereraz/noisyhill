@@ -30,3 +30,7 @@ input{
 	height: 38px;
 	padding: 0 30px;
 }
+
+.button-primary:hover{
+	border: 1px solid #777;
+}

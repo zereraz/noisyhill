@@ -70,6 +70,7 @@ app.get('/',index.home);
 var city = '';
 var longitude = '';
 var latitude = '';
+var name = '';
 app.post('/chat', function(req,res){
     var type = req.body.type;
     city = req.body.city;
@@ -91,6 +92,15 @@ app.get('/group',function(req,res){
     }else{
         res.send("Your city was not selected, <a href='/'>Back</a>")
     }
+});
+app.post('/createGroup', function(req,res){
+    var groupName = req.body.group;
+    res.redirect('/group/'+groupName);
+});
+
+app.get('/group/:name', function(req,res){
+    name = req.param('name');
+    res.render("private",name);
 });
 
 //Constructor Functions
@@ -115,7 +125,7 @@ function Group(id, name){
     this.currMembers = 1;
 }
 
-//helper functions
+//room helper functions
 function findRoom(){
     if(rooms.length === 0){
         return 0;
@@ -144,6 +154,20 @@ function findIndexRoom(id){
     }
 }
 
+//group helper
+function findGroup(name){
+    if(groups.length === 0){
+        return 0;
+    }else{
+        for(var i = 0; i < groups.length; i++){
+            if(groups[i].name === name){
+                return groups[i];
+            }
+        }
+        return 0;
+    }
+}
+
 /*==========================
  *
  *	socket.io	
@@ -159,6 +183,8 @@ var roomObj;
 
 
 var pri = io.of('/private');
+
+
 pri.on('connection', function(socket){
 
     // helper functions
@@ -216,6 +242,73 @@ pri.on('connection', function(socket){
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
         }
+    });
+    
+    console.log("Connected");
+});
+
+var tempGroup = null;
+var groupUuid = 0;
+var groupObj;
+
+var pub = io.of('/public');
+
+pub.on('connection', function(socket){
+
+    // helper functions
+    function sendTo(room, message){
+        socket.broadcast.to(room).emit(message);
+    }
+    function sendToBoth(room, message){
+        socket.emit(message);
+        socket.broadcast.to(room).emit(message);
+    }
+    
+    // create a room for every 2 people that are connected
+    // put people who join into a pool
+    // if pool is not empty take a person from the pool and send him to latest joint person
+    //temp = new People(socket.id,city,longitude,latitude);    
+    tempGroup = findGroup("test");
+    if(tempGroup === 0){
+        // when odd no. of users, create a room as no room is available
+        console.log("creating a new room")
+        groupUuid = uuid.v1();
+        groupObj = new Group(groupUuid, "test");
+        groups.push(groupObj);
+        socket.join(groupObj.id);
+        socket.emit("finding");
+        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":groupUuid});
+    }else{
+        socket.join(tempGroup.id);
+        // when found a room
+        tempGroup.available = false;        
+        sendToBoth(tempGroup.id, "connecting");
+        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
+        sendToBoth(tempGroup.id, "joint");
+        //connected[tempGroup.id] = [socket.id, tempGroup.masterId];
+        console.log(groups);
+    }
+
+    socket.on("sendMessage", function(data){
+        socket.broadcast.to(data.rId).emit("gotMessage", data);
+    });
+
+    socket.on("disconnect", function(data){
+        console.log("in disconnected");        
+        // I can also do rooms = rooms.filter(function(el){ return el.id!==socket.id});, it will return rooms
+        // whose id is not the s
+        // var index = findIndexRoom(socket.id);
+        // here we are removing room
+        // we could replace the master/other id with the existing id
+        // and make it available
+        /*console.log(index);
+        if(index!==-1){
+            socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
+            rooms.splice(index,1);
+        }else{
+            console.log("Room already gone!");
+            //socket.emit("error","Cannot remove room as index is -1");
+        }*/
     });
     
     console.log("Connected");

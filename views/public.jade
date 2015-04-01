@@ -1,5 +1,5 @@
-extends index_pri
-block content
+extends index_pub
+block content	
 	// to disconnect, chat with others, home
 	#options
 		a(href="/")
@@ -7,7 +7,6 @@ block content
 		button(id="newChat", class="button-primary") New Chat
 		button(id="disconnect", class="button-primary") Disconnect
 
-	#map-canvas
 	button(class="button-primary",id="info")
 	//maybe change it later to form and do preventDefault
 	button(class="button-primary",id="status")
