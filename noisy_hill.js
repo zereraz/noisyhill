@@ -244,8 +244,20 @@ pri.on('connection', function(socket){
         // and make it available
         console.log(index);
         if(index!==-1){
-            socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
-            rooms.splice(index,1);
+            if(rooms[index].available){                
+                //socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
+                socket.emit("disconnected", "You are disconnected!");
+                socket.leave(rooms[index].id);
+                //only one guy was there
+                rooms.splice(index,1);    
+            }else{
+                // rooms is not available so not removing the room
+                socket.emit("disconnected", "You are disconnected!");
+                socket.broadcast.to(rooms[index].id).emit("finding");
+                socket.leave(rooms[index].id);
+                rooms[index].available = true;
+            }
+            
         }else{
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
@@ -298,21 +310,17 @@ pub.on('connection', function(socket){
     });
 
     socket.on("disconnect", function(data){
-        console.log("in disconnected");        
-        // I can also do rooms = rooms.filter(function(el){ return el.id!==socket.id});, it will return rooms
-        // whose id is not the s
-        // var index = findIndexRoom(socket.id);
-        // here we are removing room
-        // we could replace the master/other id with the existing id
-        // and make it available
-        /*console.log(index);
+        console.log("in disconnected");
+        console.log(index);
+        var index = findIndexRoom(socket.id);
         if(index!==-1){
-            socket.broadcast.to(rooms[index].id).emit("disconnected", "You are disconnected!");
-            rooms.splice(index,1);
+            socket.broadcast.to(groups[index].id).emit("disconnected", "You are disconnected!");
+            socket.leave(groups[index].id);            
+            groups[index].currMembers-=1;
         }else{
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
-        }*/
+        }
     });
     
     console.log("Connected");
