@@ -5,13 +5,18 @@ $(document).ready(function(){
 	var roomId = 0;
 	var disconnected = false;
 	var location = {};
+	var username = '';
 	//Event handlers
 	function sendMessage(){
 		var message = messageInp.val();
+		//if username was not sent
+		if(username.length === 0){
+			$('#error').text('Username not set!');
+		}
 		//if not empty
-		if(message.length!==0){
-			addToMessageContainer(message, 1);
-			socket.emit("sendMessage",{"message":message,"rId":roomId});			
+		if(message.length!==0){			
+			addToMessageContainer({"message":message,"username":username}, 1);
+			socket.emit("sendMessage",{"username":username, "message":message,"rId":roomId});			
 			messageInp.val('');
 		}
 	}
@@ -21,13 +26,14 @@ $(document).ready(function(){
 		addEventHandlers();
 	}
 	// 1 is me | 2 is other
-	function addToMessageContainer(data, by){		
+	function addToMessageContainer(data, by){	
+	console.log(data);	
 		if(by === 1){
-			var data = document.createTextNode("You : "+data);
+			var data = document.createTextNode("You .: "+data.message);
 			messageContainer.append(data);
 			messageContainer.append("</br>");
 		}else{
-			var data = document.createTextNode("Stranger : "+data);
+			var data = document.createTextNode(data.username+" .: "+data.message);
 			messageContainer.append(data);
 			messageContainer.append("</br></br>");
 		}
@@ -71,9 +77,10 @@ $(document).ready(function(){
 
 	// socket event handlers
 	socket.on("gotMessage", function(data){
-		addToMessageContainer(data.message,2);
+		addToMessageContainer(data,2);
 	});
 	socket.on("myData", function(data){
+		username = data.username;
 		console.log(data);
 		$('#message').attr('disabled',false);
 		location.city = data.c;

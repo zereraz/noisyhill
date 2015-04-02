@@ -1,3 +1,4 @@
+'use strict'
 /*==========================
  *
  *	DEPENDENCIES & GLOBAL VARIABLES
@@ -93,8 +94,10 @@ app.get('/group',function(req,res){
         res.send("Your city was not selected, <a href='/'>Back</a>")
     }
 });
+var username;
 app.post('/createGroup', function(req,res){
     var groupName = req.body.group;
+    username = req.body.username;
     res.redirect('/group/'+groupName);
 });
 
@@ -278,13 +281,14 @@ pub.on('connection', function(socket){
         groups.push(groupObj);
         socket.join(groupObj.id);
         socket.emit("finding");
-        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":groupUuid});
+        socket.emit("myData", {"username":username,"c":city,"lo":longitude,"la":latitude,"rm":groupUuid});
     }else{
         socket.join(tempGroup.id);
         // when found a room        
         sendToBoth(tempGroup.id, "connecting");
-        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
+        socket.emit("myData", {"username":username,"c":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
         sendToBoth(tempGroup.id, "joint");
+        tempGroup.currMembers+=1;
         //connected[tempGroup.id] = [socket.id, tempGroup.masterId];
         console.log(groups);
     }
