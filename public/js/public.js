@@ -83,7 +83,8 @@ $(document).ready(function(){
 		username = data.username;
 		console.log(data);
 		$('#message').attr('disabled',false);
-		location.city = data.c;
+		location.country = data.co;
+		location.city = data.ci;
 		location.la = data.la;
 		location.lo = data.lo;
 		roomId = data.rm;

@@ -1,12 +1,14 @@
 $(document).ready(function(){
 	  function onGeoSuccess(location) {
         console.log(location);
+        var country = location.address.country;
 	  	var city = location.address.city;
         var longitude = location.coords.longitude;
         var latitude = location.coords.latitude;
-	  	$('#status').html("<h3>Location found city : "+city+"</h3>");
+	  	$('#status').html("<h3>Location found city : "+ city +", "+ country +"</h3>");
         $("form :input").attr("disabled", false);
         //add to form city
+        $('form').append($('<input />').attr('type','hidden').attr('name','country').attr('value',country));
         $('form').append($('<input />').attr('type','hidden').attr('name','city').attr('value',city));
         $('form').append($('<input />').attr('type','hidden').attr('name','longitude').attr('value',longitude));
         $('form').append($('<input />').attr('type','hidden').attr('name','latitude').attr('value',latitude));

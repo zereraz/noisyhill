@@ -69,11 +69,13 @@ app.get('/',index.home);
 // app.post('/room',room.pRoom);
 // app.get('/usercheck',room.userCheck);
 var city = '';
+var country = '';
 var longitude = '';
 var latitude = '';
 var name = '';
 app.post('/chat', function(req,res){
     var type = req.body.type;
+    country = req.body.country;
     city = req.body.city;
     longitude = req.body.longitude;
     latitude = req.body.latitude;
@@ -175,6 +177,20 @@ function findGroup(name){
         return 0;
     }
 }
+function findIndexGroup(id){
+    console.log("finding index for "+id);
+    console.log("\n"+groups.length);
+    if(groups.length === 0){
+        return -1;
+    }else{
+        for(var i = 0; i < groups.length; i++){
+            if(groups[i].id === id){
+                return i;
+            }
+        }
+        return -1;
+    }
+}
 
 /*==========================
  *
@@ -217,14 +233,14 @@ pri.on('connection', function(socket){
         rooms.push(roomObj);
         socket.join(roomObj.id);
         socket.emit("finding");
-        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":roomUuid});
+        socket.emit("myData", {"co":country,"ci":city,"lo":longitude,"la":latitude,"rm":roomUuid});
     }else{        
         socket.join(tempRoom.id);
         // when found a room
         tempRoom.available = false;
         tempRoom.otherId = socket.id;
         sendToBoth(tempRoom.id, "connecting");
-        socket.emit("myData", {"c":city,"lo":longitude,"la":latitude,"rm":tempRoom.id});
+        socket.emit("myData", {"co":country,"ci":city,"lo":longitude,"la":latitude,"rm":tempRoom.id});
         sendToBoth(tempRoom.id, "joint");
         connected[tempRoom.id] = [socket.id, tempRoom.masterId];
         console.log(rooms);
@@ -292,14 +308,16 @@ pub.on('connection', function(socket){
         groupObj = new Group(groupUuid, name);
         groups.push(groupObj);
         socket.join(groupObj.id);
+        socket.grp = groupObj.id;
         socket.emit("finding");
-        socket.emit("myData", {"username":username,"c":city,"lo":longitude,"la":latitude,"rm":groupUuid});
+        socket.emit("myData", {"username":username,"co":country,"ci":city,"lo":longitude,"la":latitude,"rm":groupUuid});
     }else{
         socket.join(tempGroup.id);
         // when found a room        
         sendToBoth(tempGroup.id, "connecting");
-        socket.emit("myData", {"username":username,"c":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
+        socket.emit("myData", {"username":username,"co":country,"ci":city,"lo":longitude,"la":latitude,"rm":tempGroup.id});
         sendToBoth(tempGroup.id, "joint");
+        socket.grp = tempGroup.id;
         tempGroup.currMembers+=1;
         //connected[tempGroup.id] = [socket.id, tempGroup.masterId];
         console.log(groups);
@@ -310,13 +328,16 @@ pub.on('connection', function(socket){
     });
 
     socket.on("disconnect", function(data){
-        console.log("in disconnected");
+        console.log("in disconnected");        
+        var index = findIndexGroup(socket.grp);
         console.log(index);
-        var index = findIndexRoom(socket.id);
         if(index!==-1){
             socket.broadcast.to(groups[index].id).emit("disconnected", "You are disconnected!");
-            socket.leave(groups[index].id);            
+            socket.leave(groups[index].id);
             groups[index].currMembers-=1;
+            if(groups[index].currMembers === 0){
+                groups.splice(index,1);
+            }
         }else{
             console.log("Room already gone!");
             //socket.emit("error","Cannot remove room as index is -1");
